@@ -4,52 +4,52 @@ import pandas as pd
 
 # Dictionary containings all details of available program options from provided questions
 dict_program = {
-    '1': {
+    1: {
         'A': ("Create Analytics Dashboard", "Tutorial Based", "Rp 500.000,0"),
         'B': ("Perform Customer Segmentation", "Mentoring Based", "Rp 350.000,0"),
-        'C': ("Design AB Test Expermentation", "Mentoring Based", "Rp 300.000,0")
+        'C': ("Design AB Test Experimentation", "Mentoring Based", "Rp 300.000,0")
     },
-    '2': {
+    2: {
         'A': ("Create Analytics Dashboard", "Tutorial Based", "Rp 500.000,0"),
         'B': ("Design Data Pipeline", "Mentoring Based", "Rp 300.000,0"),
         'C': ("Perform Credit Scoring Analytics", "Mentoring Based", "Rp 550.000,0")
     },
-    '3': {
+    3: {
         'A': ("Perform Customer Segmentation", "Mentoring Based", "Rp 350.000,0"),
         'B': ("Perform Customer Segmentation", "Tutorial Based", "Rp 450.000,0"),
         'C': ("Design Data Pipeline", "Mentoring Based", "Rp 250.000,0")
     },
-    '4': {
+    4: {
         'A': ("Design AB Test Experimentation", "Mentoring Based", "Rp 500.000,0"),
         'B': ("Perform Price Optimization", "Tutorial Based", "Rp 350.000,0"),
         'C': ("Perform Credit Scoring Analysis", "Mentoring Based", "Rp 350.000,0")
     },
-    '5': {
+    5: {
         'A': ("Design Data Pipeline", "Mentoring Based", "Rp 400.000,0"),
         'B': ("Perform Customer Lifetime Analysis", "Tutorial Based", "Rp 300.000,0"),
         'C': ("Design AB Test Experimentation", "Tutorial Based", "Rp 300.000,0")
     },
-    '6': {
+    6: {
         'A': ("Perform Churn Analytics", "Tutorial Based", "Rp 450.000,0"),
         'B': ("Perform Customer Segmentation", "Mentoring Based", "Rp 300.000,0"),
         'C': ("Create Machine Learning Model", "Mentoring Based", "Rp 300.000,0")
     },
-    '7': {
+    7: {
         'A': ("Perform Customer Lifetime Analysis", "Tutorial Based", "Rp500.000,0"),
         'B': ("Design Data Pipeline", "Mentoring Based", "Rp 550.000,0"),
         'C': ("Deploy Machine Learning Model", "Tutorial Based", "Rp 350.000,0")
     },
-    '8': {
+    8: {
         'A': ("Perform Credit Scoring Analytics", "Mentoring Based", "Rp 300.000,0"),
         'B': ("Design Data Pipeline", "Mentoring Based", "Rp 550.000,0"),
         'C': ("Create Machine Learning Model", "Tutorial Based", "Rp 550.000,0")
     },
-    '9': {
+    9: {
         'A': ("Create Analytics Dashboard", "Mentoring Based", "Rp 250.000,0"),
         'B': ("Design AB Test Experimentation", "Tutorial Based", "Rp 550.000,0"),
         'C': ("Perform Customer Lifetime Analysis", "Mentoring Based", "Rp 350.000,0")
     },
-    '10': {
+    10: {
         'A': ("Perform Credit Scoring Analytics", "Mentoring Based", "Rp 400.000,0"),
         'B': ("Perform Churn Analytics", "Mentoring Based", "Rp 450.000,0"),
         'C': ("Perform Churn Analytics", "Tutorial Based", "Rp 500.000,0")
@@ -88,22 +88,6 @@ def merge_data(data_path):
     return df_merged
 
 
-def change_columns_name(df, new_col):
-    """
-    Function to immediately change all the DataFrame's column names to the intended names
-
-    :param df: DataFrame which all the column names want to be changed
-    :param new_col: List of the new column names
-    :return: DataFrame which all the column names have been already changed
-    """
-
-    # Rename all the column names to the new names
-    df.rename(columns=new_col, inplace=True)
-
-    # Return the DataFrame which the column names have been changed
-    return df
-
-
 def remove_invalid_val(df, inv_val):
     """
     Function to remove all invalid data.
@@ -131,14 +115,15 @@ def get_program_details(df, df_new):
     Each for opinion about programs A, B, and C.
 
     :param df: DataFrame which contains the raw data
-    :param df_new: DataFrame which has the criteria or details needed and considered as usable form
+    :param df_new: DataFrame which has the criteria or details needed and considered as usable and structured data
     :return: DataFrame which has included the required details
     """
 
     # Loop for each row while checking each column which contains the question's answer
     for idx, row in df.iterrows():
         for col, val in row.items():
-            if col != "user_phone":
+            # Exclude the column contains survey taker's phone number from the loop
+            if col != df.columns[0]:
                 # Set all choice as 0 for initial choice -> Equal to option 'D'
                 choice_ctr = [0, 0, 0]
 
@@ -152,20 +137,20 @@ def get_program_details(df, df_new):
                     choice_ctr[2] = 1
 
                 # Get the details about each program from the program's dictionary
-                program_set_a = dict_program[col]['A']
-                program_set_b = dict_program[col]['B']
-                program_set_c = dict_program[col]['C']
+                program_set_a = dict_program[df.columns.get_loc(col)]['A']
+                program_set_b = dict_program[df.columns.get_loc(col)]['B']
+                program_set_c = dict_program[df.columns.get_loc(col)]['C']
 
                 # Add new data regarding the opinion about each available program from the question
                 # The details including 'user_phone', 'choice', 'skill', 'bentuk_program', and 'harga_program'
                 # Program A
-                df_new.loc[len(df_new.index)] = [df.loc[idx, "user_phone"], choice_ctr[0], program_set_a[0],
+                df_new.loc[len(df_new.index)] = [df.iloc[idx, 0], choice_ctr[0], program_set_a[0],
                                                  program_set_a[1], program_set_a[2]]
                 # Program B
-                df_new.loc[len(df_new.index)] = [df.loc[idx, "user_phone"], choice_ctr[1], program_set_b[0],
+                df_new.loc[len(df_new.index)] = [df.iloc[idx, 0], choice_ctr[1], program_set_b[0],
                                                  program_set_b[1], program_set_b[2]]
                 # Program C
-                df_new.loc[len(df_new.index)] = [df.loc[idx, "user_phone"], choice_ctr[2], program_set_c[0],
+                df_new.loc[len(df_new.index)] = [df.iloc[idx, 0], choice_ctr[2], program_set_c[0],
                                                  program_set_c[1], program_set_c[2]]
 
     # Return the DataFrame which has included the required details

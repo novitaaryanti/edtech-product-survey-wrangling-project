@@ -15,18 +15,12 @@ def main():
     # Call merge_data function
     df = merge_data(data_path)
 
-    # Remove all the duplicate data if any
+    # Remove all the duplicate and missing data if any
     df = df.drop_duplicates()
+    df = df.dropna()
 
     # Remove the column "Timestamp" as it is unnecessary for the current case of data wrangling
     df = df.drop("Timestamp", axis="columns")
-
-    # Change all the column names to make it easier to access the DataFrame
-    # The column names will be named by the question (1 to 10)
-    # The column which contains the survey taker's phone number will be named as "user_phone"
-    new_col_names = {col_name: str(idx) for idx, col_name in enumerate(df.columns)}
-    df = change_columns_name(df, new_col_names)
-    df.rename(columns={'0': "user_phone"}, inplace=True)
 
     # Delete all invalid value which contains a comma followed by option 'D'
     # Call remove_invalid_val
